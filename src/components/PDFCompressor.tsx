@@ -65,8 +65,8 @@ export default function PDFCompressor() {
       return;
     }
 
-    if (file.size > 50 * 1024 * 1024) {
-      setError('Bestand is te groot (max 50MB)');
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Bestand is te groot (max 5MB)');
       return;
     }
 
