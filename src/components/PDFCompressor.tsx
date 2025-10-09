@@ -1,8 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Upload, Download, FileDown, Loader2, CheckCircle2, AlertCircle, RotateCcw } from 'lucide-react';
 import gsap from 'gsap';
-
-const PROXY_URL = 'https://pdf-compressor-proxy.vercel.app/api/compress';
+import { supabase } from '../lib/supabase';
 
 type CompressionLevel = 'basic' | 'strong';
 
@@ -110,13 +109,22 @@ export default function PDFCompressor() {
       }));
 
       const formData = new FormData();
-      formData.append('fileInput', selectedFile);
-      formData.append('optimizeLevel', compressionLevel === 'strong' ? '0' : '2');
+      formData.append('file', selectedFile);
+      formData.append('compressionLevel', compressionLevel === 'strong' ? '0' : '2');
 
-      const response = await fetch(PROXY_URL, {
-        method: 'POST',
-        body: formData
-      });
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token || import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/compress-pdf`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          body: formData
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
