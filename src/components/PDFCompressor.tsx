@@ -110,7 +110,7 @@ export default function PDFCompressor() {
 
       const formData = new FormData();
       formData.append('file', selectedFile);
-      formData.append('compressionLevel', compressionLevel === 'strong' ? '0' : '2');
+      formData.append('compressionLevel', compressionLevel === 'strong' ? '0' : '1');
 
       const { data: { session } } = await supabase.auth.getSession();
       const token = session?.access_token || import.meta.env.VITE_SUPABASE_ANON_KEY;
