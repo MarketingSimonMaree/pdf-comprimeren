@@ -7,7 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-Info, Apikey",
 };
 
-const PROXY_URL = "https://pdf-compressor-proxy.vercel.app/api/compress";
+const RAILWAY_API_URL = "https://s-pdf-production-7603.up.railway.app/api/v1/misc/compress-pdf";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseKey = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -102,17 +102,17 @@ Deno.serve(async (req: Request) => {
     proxyFormData.append("fileInput", file);
     proxyFormData.append("optimizeLevel", compressionLevel);
 
-    const proxyResponse = await fetch(PROXY_URL, {
+    const railwayResponse = await fetch(RAILWAY_API_URL, {
       method: "POST",
       body: proxyFormData,
     });
 
-    if (!proxyResponse.ok) {
-      const errorData = await proxyResponse.json().catch(() => ({}));
-      throw new Error(errorData.message || `Proxy error: ${proxyResponse.status}`);
+    if (!railwayResponse.ok) {
+      const errorData = await railwayResponse.json().catch(() => ({}));
+      throw new Error(errorData.message || `Railway error: ${railwayResponse.status}`);
     }
 
-    const pdfBlob = await proxyResponse.blob();
+    const pdfBlob = await railwayResponse.blob();
 
     return new Response(pdfBlob, {
       status: 200,
